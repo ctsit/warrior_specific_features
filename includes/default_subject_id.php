@@ -42,7 +42,7 @@ function warrior_specific_features_default_subject_id($project_id) {
     if (!warrior_specific_features_fields_exists($req_fields, $metadata)) {
         return;
     }
-    
+
     $data = REDCap::getData($Proj->project['project_id'], 'array', $_GET['id']);
 
     if (empty($data)) {
@@ -60,10 +60,35 @@ function warrior_specific_features_default_subject_id($project_id) {
         return;
     }
 
-    $Proj->metadata['subject_id']['misc'] .= ' @DEFAULT="' . $result . '"';
+    // $Proj->metadata['subject_id']['misc'] .= ' @DEFAULT="' . $result . '"';
+    warrior_specific_features_save_record_field($project_id, $event_id, $record_id, 'subject_id', $result);
     
-    print_r("hello");
-    
+}
+
+/*
+* This function inserts or updated into redcap_data table.
+* If successful it returns true.
+*/
+function warrior_specific_features_save_record_field($project_id, $event_id, $record_id, $field_name, $value, $instance = null) {
+    $readsql = "SELECT 1 from redcap_data where project_id = $project_id and event_id = $event_id and record = '".db_escape($record_id)."' and field_name = '".db_escape($field_name)."' " . ($instance == null ? "AND instance is null" : "AND instance = '".db_escape($instance)."'");
+    $q = db_query($readsql);
+    if (!$q) return false;
+    $record_count = db_result($q, 0);
+    if ($record_count == 0) {
+        if (isSet($instance)) {
+            $sql = "INSERT INTO redcap_data (project_id, event_id, record, field_name, value, instance) " . "VALUES ($project_id, $event_id, '".db_escape($record_id)."', '".db_escape($field_name)."', '".db_escape($value)."' , $instance)";
+        } else {
+            $sql = "INSERT INTO redcap_data (project_id, event_id, record, field_name, value) " . "VALUES ($project_id, $event_id, '".db_escape($record_id)."', '".db_escape($field_name)."', '".db_escape($value)."')";
+        }
+        $q = db_query($sql);
+        if (!$q) return false;
+        return true;
+    } else {
+        $sql = "UPDATE redcap_data set value = '".db_escape($value)."' where project_id = $project_id and event_id = $event_id and record = '".db_escape($record_id)."' and field_name = '".db_escape($field_name)."' " . ($instance == null ? "AND instance is null" : "AND instance = '".db_escape($instance)."'");
+        $q = db_query($sql);
+        if (!$q) return false;
+        return true;
+    }
 }
 
 /*
@@ -96,9 +121,10 @@ function warrior_specific_features_format_subject_id($record_id, $firstname, $la
 function warrior_specific_features_is_action_tag_present($Proj, $action_tag) {
     foreach (warrior_specific_features_get_fields_names() as $field_name) {
         $misc = $Proj->metadata[$field_name]['misc'];
-        if (strcmp($misc, $action_tag) == 0) {
+        if (strpos($misc, $action_tag)) {
             return true;
         }
+
     }
     return false;
 }
