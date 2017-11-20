@@ -18,8 +18,8 @@ class ExternalModule extends AbstractExternalModule {
      * @inheritdoc
      */
     function hook_every_page_top($project_id) {
-        include_once 'includes/default_subject_id.php';
+        include_once 'includes/set_subject_id.php';
         
-        warrior_specific_features_default_subject_id($project_id);
+        warrior_specific_features_set_subject_id($project_id);
     }
 }
