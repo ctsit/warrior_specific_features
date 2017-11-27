@@ -1,9 +1,9 @@
 {
-    "name": "WarriorSpecificFeatures",
+    "name": "Warrior Specific Features",
     "namespace": "WarriorSpecificFeatures\\ExternalModule",
     "description": "This feature contians features which are specific to Warrior project.",
     "permissions": [
-        "hook_every_page_top"
+        "hook_data_entry_form_top"
     ],
     "authors": [
         {
@@ -54,18 +54,21 @@
     ],
     "project-settings": [
         {
-            "key": "first_name",
-            "name": "Given name",
-            "required": true,
-            "type": "field-list", 
-            "repeatable": false
-        },
-        {
-            "key": "surname",
-            "name": "Sur name",
-            "required": true,
-            "type": "field-list", 
-            "repeatable": false
-        }
+            "key": "automatic_subject_id",
+            "name": "Automatic subject ID",
+            "type": "sub_settings",
+            "sub_settings": [
+                {
+                    "key": "first_name",
+                    "name": "First name",
+                    "type": "field-list"
+                },
+                {
+                    "key": "last_name",
+                    "name": "Last name",
+                    "type": "field-list"
+                }
+           ]
+       }
     ]
 }

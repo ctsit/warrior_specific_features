@@ -1,32 +1,24 @@
-# Warrior project specific features
+# WARRIOR project specific features
 This is a redcap modules which contains specific features for warrior project.
 
-Prerequisites
-
 ## Prerequisites
-- [REDCap Modules](https://github.com/vanderbilt/redcap-external-modules)
-
+- REDCap >= 8.0.0 (for versions < 8.0.0, [REDCap Modules](https://github.com/vanderbilt/redcap-external-modules) is required).
 
 ## Installation
-- Clone this repo into to `<redcap-root>/modules/warrior_specific_features_v1.0.0`.
+- Clone this repo into to `<redcap-root>/modules/warrior_specific_features_v1.0`.
 - Go to **Control Center > Manage External Modules** and enable Linear Data Entry Workflow.
 - For each project you want to use this module, go to the project home page, click on **Manage External Modules** link, and then enable Warrior Specific Features for that project.
 
 ## Features included
 
-### Set subject id:
-- This feature sets subject_id field with following format <DAG_ID> . "_" . <GIVEN_NAME_INITIAL> . <SURNAME_INITIAL> . <RECORD_ID>. 
-- If it does not have DAG_ID then subject_id is saved as <GIVEN_NAME_INITIAL> . <SURNAME_INITIAL> . <RECORD_ID>.
-- GIVEN_NAME and SURNAME should be saved in the previous forms of the same event. 
-- Then this hook pulls those data and concatenate in the format that is mentioned above and saves it as a subject_id field (or another name specified in the action tags).
+### Automatic subject ID
+A new action tag is provided: `@SUBJECT-ID`, which automatically:
+- Sets the target field as read only
+- Sets a subject ID value to the target field in the following format: `<DAG_ID>-<GIVEN_NAME_INITIAL><SURNAME_INITIAL><RECORD_ID>`, e.g. for `2-101` as record ID, `John` as first name, and `Smith` as last name, the result will be `2-JS101`
 
-## How to use?
-Add action tags @SET-SUBJECT-ID and @READONLY for the field whose value needs to be saved with the above format.
+#### Configuration
+By default, Automatic subjet ID looks for `first_name` and `last_name` fields. If your source fields are named diferently, you may setup alternative sources. To do that, go to  **Manage External Modules** section of your project, click on WARRIOR Project Specific Feature's configure button, and fill fields under "Automatic subject ID" section.
 
-@READONLY action tag make sure that the field is not editable.
-@SET-SUBJECT-ID defaults the subject_id value to be in the format given above. 
-
-Example:
-@SET-SUBJECT-ID="record_id=record_id,given_name=first_name, surname=last_name"
-If the above action tag is given then the redcap fetches the data from record_id, first_name and last_name fields and saves the field with value in the above mentioned format.
-If record_id = 001_101, first_name = "Bruce", last_name = "Wayne", then subject_id will be "001_BW101".
+#### Note that:
+- If DAG ID does not exist, then the DAG prefix will be ignored - e.g. `JS101` instead of `2-JS101`
+- Given name and surname values must be saved prior to subject ID field, i.e. these fields should be placed in instruments that will be filled before subject ID field - you can force users to a linear workflow by installing [Linear Data Entry Workflow module](https://github.com/ctsit/linear_data_entry_workflow)
