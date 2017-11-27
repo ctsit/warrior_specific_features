@@ -51,5 +51,21 @@
             "email": "",
             "institution": "University of Florida"
         }
+    ],
+    "project-settings": [
+        {
+            "key": "first_name",
+            "name": "Given name",
+            "required": true,
+            "type": "field-list", 
+            "repeatable": false
+        },
+        {
+            "key": "surname",
+            "name": "Sur name",
+            "required": true,
+            "type": "field-list", 
+            "repeatable": false
+        }
     ]
 }

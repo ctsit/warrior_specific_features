@@ -7,8 +7,9 @@
 /**
  * Handles @SET-SUBJECT-ID action tag.
  */
-function warrior_specific_features_set_subject_id($project_id) {
+function warrior_specific_features_set_subject_id($project_id, $first_name_field, $surname_field) {
     global $Proj;
+
     // Checking if we are in a data entry or survey page.
     if (!in_array(PAGE, array('DataEntry/index.php', 'surveys/index.php', 'Surveys/theme_view.php'))) {
         return;
@@ -29,14 +30,14 @@ function warrior_specific_features_set_subject_id($project_id) {
     $action_tag = '@SET-SUBJECT-ID';
 
     $fieldArr = warrior_specific_features_is_action_tag_present($Proj, $action_tag);
-    if (!$fieldArr || count($fieldArr) != 4) {
+    if (!$fieldArr || count($fieldArr) != 1) {
         return;
     }
 
     // collect the required fields.
     $req_fields = array();
-    $req_fields[] = $fieldArr['given_name'];
-    $req_fields[] = $fieldArr['surname'];
+    $req_fields[] = $first_name_field;
+    $req_fields[] = $surname_field;
     
     
     // check if the required fields are present in the project or not.
@@ -139,19 +140,6 @@ function warrior_specific_features_is_action_tag_present($Proj, $action_tag) {
 
                 if (!(strpos($action, substr($action_tag,1)) === false)) {
                     $res = array();
-                    $actionVal = substr($action, 1 + strpos($action, "="));
-                    $stringArr = explode(",", $actionVal);
-                    $replaceArr = array();
-                    $replaceArr[] = '"';
-                    $replaceArr[] = " ";
-                    
-                    // iterate the metadata value of the field
-                    foreach ($stringArr as $stringArr) {
-                        // replace the ", " " with emptyb strings.
-                        $val = str_replace($replaceArr, "", $stringArr);
-                        $fieldDataArr = explode("=", $val);
-                        $res[$fieldDataArr[0]] = $fieldDataArr[1];
-                    }
                     $res["field_name"] = $field_name;
                     return $res;
                 }
