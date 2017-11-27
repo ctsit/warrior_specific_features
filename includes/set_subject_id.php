@@ -19,13 +19,11 @@ function warrior_specific_features_set_subject_id($record_id, $instrument, $even
         return;
     }
 
-    // collect the required fields.
-    $req_fields = array($first_name_field, $last_name_field);
-
     // check if the required fields are present in the project or not.
-    $metadata = $Proj->metadata;
-    if (!warrior_specific_features_fields_exists($req_fields, $metadata)) {
-        return;
+    foreach (array($first_name_field, $last_name_field) as $req_field) {
+        if (!isset($Proj->metadata[$req_field])) {
+            return;
+        }
     }
 
     // get data from redcap if data is empty then return .
@@ -85,26 +83,4 @@ function warrior_specific_features_is_action_tag_present($Proj, $action_tag, $in
     }
 
     return false;
-}
-
-/**
- * Checks if fields present in the array exists.
- *
- * @return bool
- *   TRUE if all the fields are present in the project, FALSE otherwise.
- */
-function warrior_specific_features_fields_exists($fields, $metadata) {
-    foreach ($fields as $val) {
-        $flag = false;
-        foreach ($metadata as $field) {
-            if (strcmp($field, $val) == 0) {
-                $flag = true;
-                break;
-            }
-        }
-        if (!$flag) {
-            return false;
-        }
-    }
-    return true;
 }

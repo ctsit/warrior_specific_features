@@ -1,4 +1,4 @@
-# WARRIOR project specific features
+# WARRIOR Project Specific Features
 This is a redcap modules which contains specific features for warrior project.
 
 ## Prerequisites
