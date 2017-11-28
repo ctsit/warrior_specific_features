@@ -1,0 +1,59 @@
+{
+    "name": "Warrior Specific Features",
+    "namespace": "WarriorSpecificFeatures\\ExternalModule",
+    "description": "This module contains features which are specific to the Warrior project. These extensions were not written in a generalized way for other projects.",
+    "permissions": [
+        "hook_data_entry_form_top"
+    ],
+    "authors": [
+        {
+            "name": "Philip Chase",
+            "email": "pbc@ufl.edu",
+            "institution": "CTS-IT - University of Florida"
+        },
+        {
+            "name": "Taryn Stoffs",
+            "email": "tls@ufl.edu",
+            "institution": "CTS-IT - University of Florida"
+        },
+        {
+            "name": "Surya Prasanna",
+            "email": "suryayalla@ufl.edu",
+            "institution": "CTS-IT - University of Florida"
+        },
+        {
+            "name": "Prasad Lanka",
+            "email": "planka@ufl.edu",
+            "institution": "CTS-IT - University of Florida"
+        },
+        {
+            "name": "Tiago Bember",
+            "email": "tbembersimeao@ufl.edu",
+            "institution": "CTS-IT - University of Florida"
+        },
+        {
+            "name": "Carl J Pepine, M.D., MACC",
+            "email": "",
+            "institution": "University of Florida"
+        }
+    ],
+    "project-settings": [
+        {
+            "key": "automatic_subject_id",
+            "name": "Automatic subject ID",
+            "type": "sub_settings",
+            "sub_settings": [
+                {
+                    "key": "first_name",
+                    "name": "First name",
+                    "type": "field-list"
+                },
+                {
+                    "key": "last_name",
+                    "name": "Last name",
+                    "type": "field-list"
+                }
+           ]
+       }
+    ]
+}
