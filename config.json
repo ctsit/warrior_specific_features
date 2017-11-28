@@ -1,7 +1,7 @@
 {
     "name": "Warrior Specific Features",
     "namespace": "WarriorSpecificFeatures\\ExternalModule",
-    "description": "This feature contians features which are specific to Warrior project.",
+    "description": "This feature contains features which are specific to Warrior project.",
     "permissions": [
         "hook_data_entry_form_top"
     ],
