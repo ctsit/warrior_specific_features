@@ -22,11 +22,13 @@ class ExternalModule extends AbstractExternalModule {
     function redcap_data_entry_form_top($project_id, string $record = NULL, $instrument, $event_id, $group_id = NULL, $repeat_instance = 1) {
         global $Proj;
 
+        // Read our settings from the project configuration.
         $settings = ExternalModules::getProjectSettingsAsArray($this->PREFIX, $project_id);
-
         $first_name_field = empty($settings['first_name']['value']) ? 'first_name' : $settings['first_name']['value'][0];
         $last_name_field = empty($settings['last_name']['value']) ? 'last_name' : $settings['last_name']['value'][0];
 
+        // determine if any field on this form references the action tag that triggers subject-id-setting behavior.
+        $action_tag = '@SUBJECT-ID';
         foreach (array_keys($Proj->forms[$instrument]['fields']) as $field_name) {
             // check if action is present or not
             if (strpos($Proj->metadata[$field_name]['misc'] . ' ', $action_tag . ' ') !== false) {
@@ -39,13 +41,15 @@ class ExternalModule extends AbstractExternalModule {
             return;
         }
 
+        // don't allow any such field to be writeable
         $Proj->metadata[$target_field]['misc'] .= ' @READONLY';
 
+        // don't modify the field if this form already has saved data
         if (Records::formHasData($record, $instrument, $event_id, $repeat_instance)) {
             return;
         }
 
-        // check if the required fields are present in the project or not.
+        // check if the required input fields are present in the project or not.
         $req_fields = array($first_name_field, $last_name_field);
         foreach ($req_fields as $req_field) {
             if (!isset($Proj->metadata[$req_field])) {
@@ -53,7 +57,7 @@ class ExternalModule extends AbstractExternalModule {
             }
         }
 
-        // get data from redcap if data is empty then return .
+        // get data from redcap.  if data is empty then return.
         $data = REDCap::getData($Proj->project['project_id'], 'array', $record, $req_fields);
         if (empty($data)) {
             return;
@@ -80,6 +84,8 @@ class ExternalModule extends AbstractExternalModule {
         }
 
         $res .= strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)) . $s_record_id;
+
+        // Use the @DEFAULT action tag to set the value we generated.
         $Proj->metadata[$target_field]['misc'] .= ' @DEFAULT="' . $res . '"';
     }
 }
