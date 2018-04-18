@@ -8,6 +8,7 @@ namespace WarriorSpecificFeatures\ExternalModule;
 
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
+use Form;
 use Records;
 use REDCap;
 
@@ -20,6 +21,8 @@ class ExternalModule extends AbstractExternalModule {
      * @inheritdoc
      */
     function redcap_data_entry_form_top($project_id, string $record = NULL, $instrument, $event_id, $group_id = NULL, $repeat_instance = 1) {
+        $this->processDagActionTag($record, $instrument, $event_id, $repeat_instance);
+
         global $Proj;
 
         // Read our settings from the project configuration.
@@ -87,5 +90,59 @@ class ExternalModule extends AbstractExternalModule {
 
         // Use the @DEFAULT action tag to set the value we generated.
         $Proj->metadata[$target_field]['misc'] .= ' @DEFAULT="' . $res . '"';
+    }
+
+    /**
+     * Processes @DEFAULT-DAG action in a given form.
+     */
+    protected function processDagActionTag($record = null, $instrument, $event_id, $repeat_instance = 1) {
+        global $Proj;
+
+        if ($record) {
+            if (Records::formHasData($record, $instrument, $event_id, $repeat_instance)) {
+                // If form has data, there is no point in setting up default value.
+                return;
+            }
+
+            if (!$dag = Records::getRecordGroupId($Proj->project_id, $record)) {
+                // Form has no DAG.
+                return;
+            }
+        }
+        else {
+            global $user_rights;
+
+            $dag = $user_rights['group_id'];
+            if ($dag == '' || intval($dag) != $dag) {
+                // Record creator does not belong to any valid DAG.
+                return;
+            }
+        }
+
+        if (!isset($Proj->groups[$dag])) {
+            // The DAG is not valid.
+            return;
+        }
+
+        foreach (array_keys($Proj->forms[$instrument]['fields']) as $field_name) {
+            if (!$misc = $Proj->metadata[$field_name]['misc']) {
+                // If annotation data is empty, skip current field.
+                continue;
+            }
+
+            if (Form::getValueInQuotesActionTag($misc, '@DEFAULT')) {
+                // If @DEFAULT action tag is already set, skip current field.
+                continue;
+            }
+
+            $action_tags = explode(' ', $misc);
+            if (!in_array('@DEFAULT-DAG', $action_tags)) {
+                // If @DEFAULT-DAG action tag is not set, skip current field.
+                continue;
+            }
+
+            // Setting DAG as the default value for the current field.
+            $Proj->metadata[$field_name]['misc'] .= ' @DEFAULT="' . $dag . '"';
+        }
     }
 }
