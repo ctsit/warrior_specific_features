@@ -26,6 +26,7 @@ class ExternalModule extends AbstractExternalModule {
         $settings = ExternalModules::getProjectSettingsAsArray($this->PREFIX, $project_id);
         $first_name_field = empty($settings['first_name']['value']) ? 'first_name' : $settings['first_name']['value'][0];
         $last_name_field = empty($settings['last_name']['value']) ? 'last_name' : $settings['last_name']['value'][0];
+        $subject_id_prefix = empty($settings['subject_id_prefix']['value']) ? 'WAR' : $settings['subject_id_prefix']['value'][0];
 
         // determine if any field on this form references the action tag that triggers subject-id-setting behavior.
         $action_tag = '@SUBJECT-ID';
@@ -76,14 +77,14 @@ class ExternalModule extends AbstractExternalModule {
 
         $rec_arr = explode('-', $record);
         if (count($rec_arr) == 2) {
-            $res .= $rec_arr[0] . '-';
+            $res .= $subject_id_prefix . str_pad($rec_arr[0], 2, '0', STR_PAD_LEFT) . '-';
             $s_record_id = $rec_arr[1];
         }
         else {
             $s_record_id = $rec_arr[0];
         }
 
-        $res .= strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)) . $s_record_id;
+        $res .= strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)) . str_pad($s_record_id, 3, '0', STR_PAD_LEFT);
 
         // Use the @DEFAULT action tag to set the value we generated.
         $Proj->metadata[$target_field]['misc'] .= ' @DEFAULT="' . $res . '"';
