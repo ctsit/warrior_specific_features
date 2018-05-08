@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to the WARRIOR Project Specific Features module will be documented in this file.
 
+
+## [1.1.0] - 2018-05-08
+### Added
+- Adding prefix and zero padding to subject ID. (Tiago Bember Simeao)
+
+
 ## [1.0] - 2017-11-28
 ### Added
 - First Release

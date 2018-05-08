@@ -2,7 +2,7 @@
 This is REDCap module provides specific features for the Warrior project.
 
 ## Prerequisites
-- REDCap >= 8.0.0 (for versions < 8.0.0, [REDCap Modules](https://github.com/vanderbilt/redcap-external-modules) is required).
+- REDCap >= 8.0.3 (for versions < 8.0.3, [REDCap Modules](https://github.com/vanderbilt/redcap-external-modules) is required).
 
 ## Installation
 - Clone this repo into to `<redcap-root>/modules/warrior_specific_features_v<version_number>`.
