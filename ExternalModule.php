@@ -31,8 +31,8 @@ class ExternalModule extends AbstractExternalModule {
         $form = $_GET['page'];
         foreach ($Proj->metadata as &$info) {
             // Checking if field has the correct date format and contains
-            // @MAX-DATE action tag.
-            if ($info['element_validation_type'] == 'date_ymd' && ($prefix = Form::getValueInActionTag($info['misc'], '@MAX-DATE'))) {
+            // @DATE-MAX action tag.
+            if ($info['element_validation_type'] == 'date_ymd' && ($prefix = Form::getValueInActionTag($info['misc'], '@DATE-MAX'))) {
                 self::$maxDateFields[$info['field_name']] = $prefix;
 
                 // Hiding the field from the end-users.
@@ -51,7 +51,7 @@ class ExternalModule extends AbstractExternalModule {
 
         global $Proj;
 
-        // Looping over all fields containing @MAX-DATE.
+        // Looping over all fields containing @DATE-MAX.
         foreach (self::$maxDateFields as $field_name => $prefix) {
             // Looking for date fields that match the given prefix.
             if (!$date_fields = preg_grep('/^' . $prefix . '*/', array_keys($Proj->metadata))) {
@@ -62,7 +62,7 @@ class ExternalModule extends AbstractExternalModule {
 
             $max = 0;
             foreach ($data[$record] as $values) {
-                foreach ($values as $value) {
+                foreach (array_filter($values) as $value) {
                     $timestamp = strtotime($value);
 
                     if ($timestamp !== false && $timestamp > $max_timestamp) {
