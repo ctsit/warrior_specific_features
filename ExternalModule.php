@@ -16,6 +16,76 @@ use REDCap;
  */
 class ExternalModule extends AbstractExternalModule {
 
+    static protected $maxDateFields = [];
+
+    /**
+     * @inheritdoc
+     */
+    function redcap_every_page_before_render($project_id) {
+        if (!$project_id) {
+            return;
+        }
+
+        global $Proj;
+
+        $form = $_GET['page'];
+        foreach ($Proj->metadata as &$info) {
+            // Checking if field has the correct date format and contains
+            // @MAX-DATE action tag.
+            if ($info['element_validation_type'] == 'date_ymd' && ($prefix = Form::getValueInActionTag($info['misc'], '@MAX-DATE'))) {
+                self::$maxDateFields[$info['field_name']] = $prefix;
+
+                // Hiding the field from the end-users.
+                $info['misc'] .= ' @HIDDEN';
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function redcap_save_record($project_id, $record = null, $instrument, $event_id, $group_id = null, $survey_hash = null, $response_id = null, $repeat_instance = 1) {
+        if (empty(self::$maxDateFields)) {
+            return;
+        }
+
+        global $Proj;
+
+        // Looping over all fields containing @MAX-DATE.
+        foreach (self::$maxDateFields as $field_name => $prefix) {
+            // Looking for date fields that match the given prefix.
+            if (!$date_fields = preg_grep('/^' . $prefix . '*/', array_keys($Proj->metadata))) {
+                continue;
+            }
+
+            $data = REDCap::getData($project_id, 'array', $record, $date_fields);
+
+            $max = 0;
+            foreach ($data[$record] as $values) {
+                foreach ($values as $value) {
+                    $timestamp = strtotime($value);
+
+                    if ($timestamp !== false && $timestamp > $max_timestamp) {
+                        // Storing max date.
+                        $max_timestamp = $timestamp;
+                        $max_date = $value;
+                    }
+                }
+            }
+
+            if ($max_timestamp) {
+                foreach ($Proj->eventsForms as $event_id => $forms) {
+                    if (in_array($Proj->metadata[$field_name]['form_name'], $forms)) {
+                        // Saving the max date into the action tagged field
+                        // only for the first event it appears.
+                        REDCap::saveData($project_id, 'array', [$record => [$event_id => [$field_name => $max_date]]]);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * @inheritdoc
      */
@@ -51,7 +121,7 @@ class ExternalModule extends AbstractExternalModule {
         }
 
         // check if the required input fields are present in the project or not.
-        $req_fields = array($first_name_field, $last_name_field);
+        $req_fields = [$first_name_field, $last_name_field];
         foreach ($req_fields as $req_field) {
             if (!isset($Proj->metadata[$req_field])) {
                 return;
