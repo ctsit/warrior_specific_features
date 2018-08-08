@@ -8,6 +8,7 @@ namespace WarriorSpecificFeatures\ExternalModule;
 
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
+use Form;
 use Records;
 use REDCap;
 
@@ -29,11 +30,11 @@ class ExternalModule extends AbstractExternalModule {
         global $Proj;
 
         $form = $_GET['page'];
-        foreach ($Proj->metadata as &$info) {
+        foreach ($Proj->metadata as $field_name => &$info) {
             // Checking if field has the correct date format and contains
             // @DATE-MAX action tag.
             if ($info['element_validation_type'] == 'date_ymd' && ($prefix = Form::getValueInActionTag($info['misc'], '@DATE-MAX'))) {
-                self::$maxDateFields[$info['field_name']] = $prefix;
+                self::$maxDateFields[$field_name] = $prefix;
 
                 // Hiding the field from the end-users.
                 $info['misc'] .= ' @HIDDEN';
@@ -53,14 +54,18 @@ class ExternalModule extends AbstractExternalModule {
 
         // Looping over all fields containing @DATE-MAX.
         foreach (self::$maxDateFields as $field_name => $prefix) {
+            // Avoiding the tagged field to be included on calculation.
+            $date_fields = $Proj->metadata;
+            unset($date_fields[$field_name]);
+
             // Looking for date fields that match the given prefix.
-            if (!$date_fields = preg_grep('/^' . $prefix . '*/', array_keys($Proj->metadata))) {
+            if (!$date_fields = preg_grep('/^' . $prefix . '*/', array_keys($date_fields))) {
                 continue;
             }
 
             $data = REDCap::getData($project_id, 'array', $record, $date_fields);
 
-            $max = 0;
+            $max_timestamp = 0;
             foreach ($data[$record] as $values) {
                 foreach (array_filter($values) as $value) {
                     $timestamp = strtotime($value);
