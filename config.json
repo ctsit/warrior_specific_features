@@ -3,7 +3,9 @@
     "namespace": "WarriorSpecificFeatures\\ExternalModule",
     "description": "This module contains features which are specific to the Warrior project. These extensions were not written in a generalized way for other projects.",
     "permissions": [
-        "hook_data_entry_form_top"
+        "redcap_every_page_before_render",
+        "redcap_save_record",
+        "redcap_data_entry_form_top"
     ],
     "authors": [
         {
