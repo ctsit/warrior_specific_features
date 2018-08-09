@@ -8,6 +8,8 @@ namespace WarriorSpecificFeatures\ExternalModule;
 
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
+use Form;
+use Project;
 use Records;
 use REDCap;
 
@@ -15,6 +17,80 @@ use REDCap;
  * ExternalModule class for Warrior Specific Features.
  */
 class ExternalModule extends AbstractExternalModule {
+
+    static protected $maxDateFields = [];
+
+    /**
+     * @inheritdoc
+     */
+    function redcap_every_page_before_render($project_id) {
+        if (!$project_id) {
+            return;
+        }
+
+        global $Proj;
+
+        $form = $_GET['page'];
+        foreach ($Proj->metadata as $field_name => &$info) {
+            // Checking if field has the correct date format and contains
+            // @DATE-MAX action tag.
+            if ($info['element_validation_type'] == 'date_ymd' && ($prefix = Form::getValueInActionTag($info['misc'], '@DATE-MAX'))) {
+                self::$maxDateFields[$field_name] = $prefix;
+
+                // Hiding the field from the end-users.
+                $info['misc'] .= ' @HIDDEN';
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function redcap_save_record($project_id, $record = null, $instrument, $event_id, $group_id = null, $survey_hash = null, $response_id = null, $repeat_instance = 1) {
+        if (empty(self::$maxDateFields)) {
+            return;
+        }
+
+        global $Proj;
+
+        // Looping over all fields containing @DATE-MAX.
+        foreach (self::$maxDateFields as $field_name => $prefix) {
+            // Avoiding the tagged field to be included on calculation.
+            $date_fields = $Proj->metadata;
+            unset($date_fields[$field_name]);
+
+            // Looking for date fields that match the given prefix.
+            if (!$date_fields = preg_grep('/^' . $prefix . '*/', array_keys($date_fields))) {
+                continue;
+            }
+
+            $data = REDCap::getData($project_id, 'array', $record, $date_fields);
+
+            $max_timestamp = 0;
+            foreach ($data[$record] as $values) {
+                foreach (array_filter($values) as $value) {
+                    $timestamp = strtotime($value);
+
+                    if ($timestamp !== false && $timestamp > $max_timestamp) {
+                        // Storing max date.
+                        $max_timestamp = $timestamp;
+                        $max_date = $value;
+                    }
+                }
+            }
+
+            if ($max_timestamp) {
+                foreach ($Proj->eventsForms as $event_id => $forms) {
+                    if (in_array($Proj->metadata[$field_name]['form_name'], $forms)) {
+                        // Saving the max date into the action tagged field
+                        // only for the first event it appears.
+                        $this->saveFieldData($project_id, $event_id, $record, $field_name, $max_date);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * @inheritdoc
@@ -51,7 +127,7 @@ class ExternalModule extends AbstractExternalModule {
         }
 
         // check if the required input fields are present in the project or not.
-        $req_fields = array($first_name_field, $last_name_field);
+        $req_fields = [$first_name_field, $last_name_field];
         foreach ($req_fields as $req_field) {
             if (!isset($Proj->metadata[$req_field])) {
                 return;
@@ -88,5 +164,80 @@ class ExternalModule extends AbstractExternalModule {
 
         // Use the @DEFAULT action tag to set the value we generated.
         $Proj->metadata[$target_field]['misc'] .= ' @DEFAULT="' . $res . '"';
+    }
+
+    /**
+     * Creates or updates a data entry field value.
+     *
+     * @param int $project_id
+     *   Data entry project ID.
+     * @param int $event_id
+     *   Data entry event ID.
+     * @param int $record
+     *   Data entry record ID.
+     * @param string $field_name
+     *   Machine name of the field to be updated.
+     * @param mixed $value
+     *   The value to be saved.
+     * @param int $instance
+     *   (optional) Data entry instance ID (for repeat instrument cases).
+     *
+     * @return bool
+     *   TRUE if success, FALSE otherwise.
+     */
+    protected function saveFieldData($project_id, $event_id, $record, $field_name, $value, $instance = null) {
+        try {
+            $proj = new Project($project_id);
+        }
+        catch (Exception $e) {
+            return false;
+        }
+
+        // Initial checks to make sure we are creating/editing a real thing.
+        if (
+            !isset($proj->eventInfo[$event_id]) || !isset($proj->metadata[$field_name]) ||
+            !in_array($proj->metadata[$field_name]['form_name'], $proj->eventsForms[$event_id]) ||
+            !Records::recordExists($project_id, $record, $proj->eventInfo[$event_id]['arm_num'])
+        ) {
+            return false;
+        }
+
+        $project_id = intval($project_id);
+        $event_id = intval($event_id);
+        $record = db_escape($record);
+        $field_name = db_escape($field_name);
+        $value = db_escape($value);
+        $instance = intval($instance);
+
+        $sql = 'SELECT 1 FROM redcap_data
+                WHERE project_id = "' . $project_id . '" AND
+                      event_id = "' . $event_id . '" AND
+                      record = "' . $record . '" AND
+                      field_name = "' . $field_name . '" AND
+                      instance ' . ($instance ? '= "' . $instance . '"' : 'IS NULL');
+
+        if (!$q = $this->query($sql)) {
+            return false;
+        }
+
+        if (db_num_rows($q)) {
+            $sql = 'UPDATE redcap_data SET value = "' . $value . '"
+                    WHERE project_id = "' . $project_id . '" AND
+                          event_id = "' . $event_id . '" AND
+                          record = "' . $record . '" AND
+                          field_name = "' . $field_name . '" AND
+                          instance ' . ($instance ? '= "' . $instance . '"' : 'IS NULL');
+        }
+        else {
+            $instance = $instance ? '"' . $instance . '"' : 'NULL';
+            $sql = 'INSERT INTO redcap_data (project_id, event_id, record, field_name, value, instance)
+                    VALUES ("' . $project_id . '", "' . $event_id . '", "' . $record . '", "' . $field_name . '", "' . $value . '", ' . $instance . ')';
+        }
+
+        if (!$q = $this->query($sql)) {
+            return false;
+        }
+
+        return true;
     }
 }
