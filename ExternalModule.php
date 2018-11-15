@@ -10,6 +10,7 @@ use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
 use Form;
 use Project;
+use Randomization;
 use Records;
 use REDCap;
 
@@ -41,6 +42,50 @@ class ExternalModule extends AbstractExternalModule {
                 $info['misc'] .= ' @HIDDEN';
             }
         }
+
+        /**
+         * Assuming Randomization and Subject ID fields belong to the same form,
+         * the purpose of the following code is to prevent the following case:
+         * 1. User accesses an empty randomization form, which contains a
+         *    pre-set/default value for Subject ID field.
+         * 2. User clicks on Randomization button, which saves data into that
+         *    form.
+         * 3. User leaves the form (instead of saving).
+         * 4. User goes back to the form - which now has data, so default values
+         *    do not apply anymore. Thus, Subject ID gets blank.
+         */
+        if (PAGE != 'Randomization/randomize_record.php' || empty($_POST['action']) || $_POST['action'] != 'randomize') {
+            return;
+        }
+
+        $fields = Randomization::getRandomizationFields();
+
+        if (empty($fields['target_field'])) {
+            return;
+        }
+
+        // Checking if randomization field has a subject ID neighbor.
+        if (!$subject_id_field = $this->instrumentHasSubjectIdTag($Proj->metadata[$fields['target_field']]['form_name'])) {
+            return;
+        }
+
+        $record = $_POST['record'];
+        $event_id = $_POST['event_id'];
+
+        $data = REDCap::getData($project_id, 'array', $record, $subject_id_field);
+        if (!empty($data) && !empty($data[$record][$event_id][$subject_id_field])) {
+            // Preventing override of @SUBJECT-ID field.
+            return;
+        }
+
+        // Getting subject ID value.
+        if (!$subject_id = $this->buildSubjectId($record, $event_id)) {
+            return;
+        }
+
+        // Saving subject ID before the user has the chance to leave the
+        // form without saving.
+        REDCap::saveData($project_id, 'array', [$record => [$event_id => [$subject_id_field => $subject_id]]]);
     }
 
     /**
@@ -95,28 +140,12 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * @inheritdoc
      */
-    function redcap_data_entry_form_top($project_id, string $record = NULL, $instrument, $event_id, $group_id = NULL, $repeat_instance = 1) {
-        global $Proj;
-
-        // Read our settings from the project configuration.
-        $settings = ExternalModules::getProjectSettingsAsArray($this->PREFIX, $project_id);
-        $first_name_field = empty($settings['first_name']['value']) ? 'first_name' : $settings['first_name']['value'][0];
-        $last_name_field = empty($settings['last_name']['value']) ? 'last_name' : $settings['last_name']['value'][0];
-        $subject_id_prefix = empty($settings['subject_id_prefix']['value']) ? 'WAR' : $settings['subject_id_prefix']['value'][0];
-
-        // determine if any field on this form references the action tag that triggers subject-id-setting behavior.
-        $action_tag = '@SUBJECT-ID';
-        foreach (array_keys($Proj->forms[$instrument]['fields']) as $field_name) {
-            // check if action is present or not
-            if (strpos($Proj->metadata[$field_name]['misc'] . ' ', $action_tag . ' ') !== false) {
-                $target_field = $field_name;
-                break;
-            }
-        }
-
-        if (!isset($target_field)) {
+    function redcap_data_entry_form_top($project_id, $record = null, $instrument, $event_id, $group_id = null, $repeat_instance = 1) {
+        if (!$target_field = $this->instrumentHasSubjectIdTag($instrument)) {
             return;
         }
+
+        global $Proj;
 
         // don't allow any such field to be writeable
         $Proj->metadata[$target_field]['misc'] .= ' @READONLY';
@@ -126,18 +155,74 @@ class ExternalModule extends AbstractExternalModule {
             return;
         }
 
+        // Skip if subject ID cannot be calculated.
+        if (!$subject_id = $this->buildSubjectId($record, $event_id)) {
+            return;
+        }
+
+        // Use the @DEFAULT action tag to set the value we generated.
+        $Proj->metadata[$target_field]['misc'] .= ' @DEFAULT="' . $subject_id . '"';
+    }
+
+    /**
+     * Checks whether a given instrument has a @SUBJECT-ID field.
+     *
+     * @param string $instrument
+     *   The instrument name.
+     *
+     * @return
+     *   The @SUBJECT-ID field name if exists, FALSE otherwise.
+     */
+    function instrumentHasSubjectIdTag($instrument) {
+        global $Proj;
+
+        foreach (array_keys($Proj->forms[$instrument]['fields']) as $field_name) {
+            // Check if action tag is present or not.
+            if (strpos(' ' . $Proj->metadata[$field_name]['misc'] . ' ', ' @SUBJECT-ID ') !== false) {
+                return $field_name;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Builds subject ID string.
+     *
+     * @param string $record
+     *   The record ID.
+     * @param int $event_id
+     *   The event ID.
+     *
+     * @return string $subject_id
+     *   The subject ID, formatted as follows:
+     *   - If DAG exists: [Prefix][DAG]-[First & Last name initials][Record ID]
+     *   - If DAG does not exist: [First & Last name initials][Record ID]
+     *   Obs.:
+     *   - Prefix can be configured via EM settings - defaults to "WAR".
+     *   - [DAG] is zero-padded to 2 digits, and [Record ID] to 3 digits.
+     *   Returns FALSE if subject ID cannot be calculated.
+     */
+    function buildSubjectId($record, $event_id) {
+        global $Proj;
+
+        // Read our settings from the project configuration.
+        $settings = ExternalModules::getProjectSettingsAsArray($this->PREFIX, $Proj->project['project_id']);
+        $first_name_field = empty($settings['first_name']['value']) ? 'first_name' : $settings['first_name']['value'][0];
+        $last_name_field = empty($settings['last_name']['value']) ? 'last_name' : $settings['last_name']['value'][0];
+
         // check if the required input fields are present in the project or not.
         $req_fields = [$first_name_field, $last_name_field];
         foreach ($req_fields as $req_field) {
             if (!isset($Proj->metadata[$req_field])) {
-                return;
+                return false;
             }
         }
 
         // get data from redcap.  if data is empty then return.
         $data = REDCap::getData($Proj->project['project_id'], 'array', $record, $req_fields);
         if (empty($data)) {
-            return;
+            return false;
         }
 
         $data = $data[$record][$event_id];
@@ -145,25 +230,23 @@ class ExternalModule extends AbstractExternalModule {
         $last_name  = $data[$last_name_field];
 
         if (empty($first_name) || empty($last_name)) {
-            return;
+            return false;
         }
 
-        // format the subject_id with the given format.
-        $res = '';
+        $parts = explode('-', $record);
 
-        $rec_arr = explode('-', $record);
-        if (count($rec_arr) == 2) {
-            $res .= $subject_id_prefix . str_pad($rec_arr[0], 2, '0', STR_PAD_LEFT) . '-';
-            $s_record_id = $rec_arr[1];
+        // Format subject ID.
+        $subject_id = '';
+        $record_number = $parts[0];
+
+        if (count($parts) == 2) {
+            $subject_id = empty($settings['subject_id_prefix']['value']) ? 'WAR' : $settings['subject_id_prefix']['value'][0];
+            $subject_id .= str_pad($parts[0], 2, '0', STR_PAD_LEFT) . '-';
+            $record_number = $parts[1];
         }
-        else {
-            $s_record_id = $rec_arr[0];
-        }
 
-        $res .= strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)) . str_pad($s_record_id, 3, '0', STR_PAD_LEFT);
-
-        // Use the @DEFAULT action tag to set the value we generated.
-        $Proj->metadata[$target_field]['misc'] .= ' @DEFAULT="' . $res . '"';
+        $subject_id .= strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1)) . str_pad($record_number, 3, '0', STR_PAD_LEFT);
+        return $subject_id;
     }
 
     /**

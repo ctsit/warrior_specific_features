@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to the WARRIOR Project Specific Features module will be documented in this file.
 
+## [1.2.1] - 2018-11-15
+### Changed
+- Handling boundary case that allows blank subject ID values. (Tiago Bember Simeao)
+
+
 ## [1.2.0] - 2018-08-09
 ### Added
 - Add @DATE-MAX action tag. (Tiago Bember Simeao)
