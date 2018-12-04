@@ -39,7 +39,7 @@ class ExternalModule extends AbstractExternalModule {
                 self::$maxDateFields[$field_name] = $prefix;
 
                 // Hiding the field from the end-users.
-                $info['misc'] .= ' @HIDDEN';
+                $info['misc'] .= SUPER_USER || ACCOUNT_MANAGER ? ' @READONLY' : ' @HIDDEN';
             }
         }
 
