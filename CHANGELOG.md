@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to the WARRIOR Project Specific Features module will be documented in this file.
 
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [1.2.2] - 2018-12-17
+### Changed
+- Allow Superusers and Account managers to edit fields tagged with the @date-max action tag (Philip Chase)
+- Showing @MAX-DATE fields to global admins. (Tiago Bember Simeao)
+
+
 ## [1.2.1] - 2018-11-15
 ### Changed
 - Handling boundary case that allows blank subject ID values. (Tiago Bember Simeao)
