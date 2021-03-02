@@ -34,3 +34,10 @@ A new action tag is provided: `@DATE-MAX`, which takes the maximum date from a b
 - A name prefix must be provided as argument in order to group the target fields. Example: `@DATE-MAX=date_example_` will extract the maximum from fields like `date_example_foo`, `date_example_bar`, etc.
 - Every time a target field is updated, the maximum value is recalculated and saved again, no matter if the tagged field is in the current form.
 - If the tagged field is present in multiple events, the maximum value is only stored in the first one. It means that the first event should be always referenced for Piping purposes (e.g. `[event_1_arm_1][max_date_example]`).
+
+### Testing
+Two sample projects are included under the **samples/** directory: 
+1. **AutoDate.xml**
+1. **Subject-ID.xml**
+
+**AutoDate.xml** provides a template to test the **@DATE-MAX** action tag. Correspondingly, **Subject-ID.xml** provides a template to test the **@SUBJECT-ID** action tag.

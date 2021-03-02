@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redcap="https://projectredcap.org" xsi:schemaLocation="http://www.cdisc.org/ns/odm/v1.3 schema/odm/ODM1-3-1.xsd" ODMVersion="1.3.1" FileOID="000-00-0000" FileType="Snapshot" Description="Warrior Specific Features Sample Project - @SUBJECT-ID" AsOfDateTime="2021-03-02T16:33:43" CreationDateTime="2021-03-02T16:33:43" SourceSystem="REDCap" SourceSystemVersion="10.5.1">
+<Study OID="Project.WarriorSpecificFeaturesSampleP">
+<GlobalVariables>
+	<StudyName>Warrior Specific Features Sample Project - @SUBJECT-ID</StudyName>
+	<StudyDescription>This file contains the metadata, events, and data for REDCap project "Warrior Specific Features Sample Project - @SUBJECT-ID".</StudyDescription>
+	<ProtocolName>Warrior Specific Features Sample Project - @SUBJECT-ID</ProtocolName>
+	<redcap:RecordAutonumberingEnabled>1</redcap:RecordAutonumberingEnabled>
+	<redcap:CustomRecordLabel></redcap:CustomRecordLabel>
+	<redcap:SecondaryUniqueField></redcap:SecondaryUniqueField>
+	<redcap:SchedulingEnabled>0</redcap:SchedulingEnabled>
+	<redcap:SurveysEnabled>0</redcap:SurveysEnabled>
+	<redcap:SurveyInvitationEmailField></redcap:SurveyInvitationEmailField>
+	<redcap:Purpose>0</redcap:Purpose>
+	<redcap:PurposeOther></redcap:PurposeOther>
+	<redcap:ProjectNotes></redcap:ProjectNotes>
+	<redcap:MissingDataCodes></redcap:MissingDataCodes>
+	<redcap:DataAccessGroupsGroup>
+		<redcap:DataAccessGroups group_name="WAR"/>
+	</redcap:DataAccessGroupsGroup>
+</GlobalVariables>
+<MetaDataVersion OID="Metadata.WarriorSpecificFeaturesSampleP_2021-03-02_1633" Name="Warrior Specific Features Sample Project - @SUBJECT-ID" redcap:RecordIdField="record_id">
+	<FormDef OID="Form.subject_info" Name="Subject Info" Repeating="No" redcap:FormName="subject_info">
+		<ItemGroupRef ItemGroupOID="subject_info.record_id" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="subject_info.subject_info_complete" Mandatory="No"/>
+	</FormDef>
+	<FormDef OID="Form.subject_id" Name="Subject ID" Repeating="No" redcap:FormName="subject_id">
+		<ItemGroupRef ItemGroupOID="subject_id.subject_id" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="subject_id.subject_id_complete" Mandatory="No"/>
+	</FormDef>
+	<ItemGroupDef OID="subject_info.record_id" Name="Subject Info" Repeating="No">
+		<ItemRef ItemOID="record_id" Mandatory="No" redcap:Variable="record_id"/>
+		<ItemRef ItemOID="first_name" Mandatory="No" redcap:Variable="first_name"/>
+		<ItemRef ItemOID="last_name" Mandatory="No" redcap:Variable="last_name"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="subject_info.subject_info_complete" Name="Form Status" Repeating="No">
+		<ItemRef ItemOID="subject_info_complete" Mandatory="No" redcap:Variable="subject_info_complete"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="subject_id.subject_id" Name="Subject ID" Repeating="No">
+		<ItemRef ItemOID="subject_id" Mandatory="No" redcap:Variable="subject_id"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="subject_id.subject_id_complete" Name="Form Status" Repeating="No">
+		<ItemRef ItemOID="subject_id_complete" Mandatory="No" redcap:Variable="subject_id_complete"/>
+	</ItemGroupDef>
+	<ItemDef OID="record_id" Name="record_id" DataType="text" Length="999" redcap:Variable="record_id" redcap:FieldType="text">
+		<Question><TranslatedText>Record ID</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="first_name" Name="first_name" DataType="text" Length="999" redcap:Variable="first_name" redcap:FieldType="text">
+		<Question><TranslatedText>first name</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="last_name" Name="last_name" DataType="text" Length="999" redcap:Variable="last_name" redcap:FieldType="text">
+		<Question><TranslatedText>last name</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="subject_info_complete" Name="subject_info_complete" DataType="text" Length="1" redcap:Variable="subject_info_complete" redcap:FieldType="select" redcap:SectionHeader="Form Status">
+		<Question><TranslatedText>Complete?</TranslatedText></Question>
+		<CodeListRef CodeListOID="subject_info_complete.choices"/>
+	</ItemDef>
+	<ItemDef OID="subject_id" Name="subject_id" DataType="text" Length="999" redcap:Variable="subject_id" redcap:FieldType="text" redcap:FieldAnnotation="@SUBJECT-ID">
+		<Question><TranslatedText></TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="subject_id_complete" Name="subject_id_complete" DataType="text" Length="1" redcap:Variable="subject_id_complete" redcap:FieldType="select" redcap:SectionHeader="Form Status">
+		<Question><TranslatedText>Complete?</TranslatedText></Question>
+		<CodeListRef CodeListOID="subject_id_complete.choices"/>
+	</ItemDef>
+	<CodeList OID="subject_info_complete.choices" Name="subject_info_complete" DataType="text" redcap:Variable="subject_info_complete">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>Incomplete</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>Unverified</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="2"><Decode><TranslatedText>Complete</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+	<CodeList OID="subject_id_complete.choices" Name="subject_id_complete" DataType="text" redcap:Variable="subject_id_complete">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>Incomplete</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>Unverified</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="2"><Decode><TranslatedText>Complete</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+</MetaDataVersion>
+</Study>
+</ODM>
