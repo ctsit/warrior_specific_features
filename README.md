@@ -6,7 +6,7 @@ This is REDCap module provides specific features for the Warrior project.
 
 ## Installation
 - Clone this repo into to `<redcap-root>/modules/warrior_specific_features_v<version_number>`.
-- Go to **Control Center > Manage External Modules** and enable Linear Data Entry Workflow.
+- Go to **Control Center > Manage External Modules** and enable Warrior Specific Features.
 - For each project you want to use this module, go to the project home page, click on **Manage External Modules** link, and then enable Warrior Specific Features for that project.
 
 ## Features included
@@ -14,7 +14,7 @@ This is REDCap module provides specific features for the Warrior project.
 ### @SUBJECT-ID action tag
 A new action tag is provided: `@SUBJECT-ID`, which automatically:
 - Sets the target field as read only
-- Sets a subject ID value to the target field in the following format: `<PREFIX><DAG_ID>-<GIVEN_NAME_INITIAL><SURNAME_INITIAL><RECORD_ID>`, e.g. for `2-12`, `WAR` as prefix, as record ID, `John` as first name, and `Smith` as last name, the result will be `WAR02-JS012`.
+- Sets a subject ID value to the target field in the following format: `<PREFIX><DAG_ID>-<GIVEN_NAME_INITIAL><SURNAME_INITIAL><RECORD_ID>`, e.g. for `2-12` as record ID, `WAR` as prefix, `John` as first name, and `Smith` as last name, the result will be `WAR02-JS012`.
 
 Obs.: Note that dag ID is zero-padded to 2 digits, and record ID is zero-padded to 3 digits.
 
