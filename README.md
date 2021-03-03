@@ -6,7 +6,7 @@ This is REDCap module provides specific features for the Warrior project.
 
 ## Installation
 - Clone this repo into to `<redcap-root>/modules/warrior_specific_features_v<version_number>`.
-- Go to **Control Center > Manage External Modules** and enable Linear Data Entry Workflow.
+- Go to **Control Center > Manage External Modules** and enable Warrior Specific Features.
 - For each project you want to use this module, go to the project home page, click on **Manage External Modules** link, and then enable Warrior Specific Features for that project.
 
 ## Features included
@@ -14,7 +14,7 @@ This is REDCap module provides specific features for the Warrior project.
 ### @SUBJECT-ID action tag
 A new action tag is provided: `@SUBJECT-ID`, which automatically:
 - Sets the target field as read only
-- Sets a subject ID value to the target field in the following format: `<PREFIX><DAG_ID>-<GIVEN_NAME_INITIAL><SURNAME_INITIAL><RECORD_ID>`, e.g. for `2-12`, `WAR` as prefix, as record ID, `John` as first name, and `Smith` as last name, the result will be `WAR02-JS012`.
+- Sets a subject ID value to the target field in the following format: `<PREFIX><DAG_ID>-<GIVEN_NAME_INITIAL><SURNAME_INITIAL><RECORD_ID>`, e.g. for `2-12` as record ID, `WAR` as prefix, `John` as first name, and `Smith` as last name, the result will be `WAR02-JS012`.
 
 Obs.: Note that dag ID is zero-padded to 2 digits, and record ID is zero-padded to 3 digits.
 
@@ -34,3 +34,10 @@ A new action tag is provided: `@DATE-MAX`, which takes the maximum date from a b
 - A name prefix must be provided as argument in order to group the target fields. Example: `@DATE-MAX=date_example_` will extract the maximum from fields like `date_example_foo`, `date_example_bar`, etc.
 - Every time a target field is updated, the maximum value is recalculated and saved again, no matter if the tagged field is in the current form.
 - If the tagged field is present in multiple events, the maximum value is only stored in the first one. It means that the first event should be always referenced for Piping purposes (e.g. `[event_1_arm_1][max_date_example]`).
+
+### Testing
+Two sample projects are included under the **samples/** directory: 
+1. **AutoDate.xml**
+1. **Subject-ID.xml**
+
+**AutoDate.xml** provides a template to test the **@DATE-MAX** action tag. Correspondingly, **Subject-ID.xml** provides a template to test the **@SUBJECT-ID** action tag.

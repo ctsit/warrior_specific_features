@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:redcap="https://projectredcap.org" xsi:schemaLocation="http://www.cdisc.org/ns/odm/v1.3 schema/odm/ODM1-3-1.xsd" ODMVersion="1.3.1" FileOID="000-00-0000" FileType="Snapshot" Description="Warrior Specific Features Sample Project" AsOfDateTime="2021-03-02T14:59:21" CreationDateTime="2021-03-02T14:59:21" SourceSystem="REDCap" SourceSystemVersion="10.5.1">
+<Study OID="Project.WarriorSpecificFeaturesSampleP">
+<GlobalVariables>
+	<StudyName>Warrior Specific Features Sample Project</StudyName>
+	<StudyDescription>This file contains the metadata, events, and data for REDCap project "Warrior Specific Features Sample Project".</StudyDescription>
+	<ProtocolName>Warrior Specific Features Sample Project</ProtocolName>
+	<redcap:RecordAutonumberingEnabled>1</redcap:RecordAutonumberingEnabled>
+	<redcap:CustomRecordLabel></redcap:CustomRecordLabel>
+	<redcap:SecondaryUniqueField></redcap:SecondaryUniqueField>
+	<redcap:SchedulingEnabled>0</redcap:SchedulingEnabled>
+	<redcap:SurveysEnabled>0</redcap:SurveysEnabled>
+	<redcap:SurveyInvitationEmailField></redcap:SurveyInvitationEmailField>
+	<redcap:Purpose>0</redcap:Purpose>
+	<redcap:PurposeOther></redcap:PurposeOther>
+	<redcap:ProjectNotes>Sample project for testing Warrior Specific Features external module</redcap:ProjectNotes>
+	<redcap:MissingDataCodes></redcap:MissingDataCodes>
+</GlobalVariables>
+<MetaDataVersion OID="Metadata.WarriorSpecificFeaturesSampleP_2021-03-02_1459" Name="Warrior Specific Features Sample Project" redcap:RecordIdField="record_id">
+	<FormDef OID="Form.event_1" Name="Event 1" Repeating="No" redcap:FormName="event_1">
+		<ItemGroupRef ItemGroupOID="event_1.record_id" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="event_1.event_1_complete" Mandatory="No"/>
+	</FormDef>
+	<FormDef OID="Form.event_2" Name="Event 2" Repeating="No" redcap:FormName="event_2">
+		<ItemGroupRef ItemGroupOID="event_2.date_example_2" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="event_2.event_2_complete" Mandatory="No"/>
+	</FormDef>
+	<FormDef OID="Form.event_3" Name="Event 3" Repeating="No" redcap:FormName="event_3">
+		<ItemGroupRef ItemGroupOID="event_3.date_example_3" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="event_3.event_3_complete" Mandatory="No"/>
+	</FormDef>
+	<FormDef OID="Form.event_4" Name="Event 4" Repeating="No" redcap:FormName="event_4">
+		<ItemGroupRef ItemGroupOID="event_4.date_example_4" Mandatory="No"/>
+		<ItemGroupRef ItemGroupOID="event_4.event_4_complete" Mandatory="No"/>
+	</FormDef>
+	<ItemGroupDef OID="event_1.record_id" Name="Event 1" Repeating="No">
+		<ItemRef ItemOID="record_id" Mandatory="No" redcap:Variable="record_id"/>
+		<ItemRef ItemOID="max_date" Mandatory="No" redcap:Variable="max_date"/>
+		<ItemRef ItemOID="date_example_1" Mandatory="No" redcap:Variable="date_example_1"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="event_1.event_1_complete" Name="Form Status" Repeating="No">
+		<ItemRef ItemOID="event_1_complete" Mandatory="No" redcap:Variable="event_1_complete"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="event_2.date_example_2" Name="Event 2" Repeating="No">
+		<ItemRef ItemOID="date_example_2" Mandatory="No" redcap:Variable="date_example_2"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="event_2.event_2_complete" Name="Form Status" Repeating="No">
+		<ItemRef ItemOID="event_2_complete" Mandatory="No" redcap:Variable="event_2_complete"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="event_3.date_example_3" Name="Event 3" Repeating="No">
+		<ItemRef ItemOID="date_example_3" Mandatory="No" redcap:Variable="date_example_3"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="event_3.event_3_complete" Name="Form Status" Repeating="No">
+		<ItemRef ItemOID="event_3_complete" Mandatory="No" redcap:Variable="event_3_complete"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="event_4.date_example_4" Name="Event 4" Repeating="No">
+		<ItemRef ItemOID="date_example_4" Mandatory="No" redcap:Variable="date_example_4"/>
+	</ItemGroupDef>
+	<ItemGroupDef OID="event_4.event_4_complete" Name="Form Status" Repeating="No">
+		<ItemRef ItemOID="event_4_complete" Mandatory="No" redcap:Variable="event_4_complete"/>
+	</ItemGroupDef>
+	<ItemDef OID="record_id" Name="record_id" DataType="text" Length="999" redcap:Variable="record_id" redcap:FieldType="text">
+		<Question><TranslatedText>Record ID</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="max_date" Name="max_date" DataType="date" Length="999" redcap:Variable="max_date" redcap:FieldType="text" redcap:TextValidationType="date_ymd" redcap:FieldAnnotation="@DATE-MAX=date_example_">
+		<Question><TranslatedText>Max date</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="date_example_1" Name="date_example_1" DataType="date" Length="999" redcap:Variable="date_example_1" redcap:FieldType="text" redcap:TextValidationType="date_ymd">
+		<Question><TranslatedText>date 1</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="event_1_complete" Name="event_1_complete" DataType="text" Length="1" redcap:Variable="event_1_complete" redcap:FieldType="select" redcap:SectionHeader="Form Status">
+		<Question><TranslatedText>Complete?</TranslatedText></Question>
+		<CodeListRef CodeListOID="event_1_complete.choices"/>
+	</ItemDef>
+	<ItemDef OID="date_example_2" Name="date_example_2" DataType="date" Length="999" redcap:Variable="date_example_2" redcap:FieldType="text" redcap:TextValidationType="date_ymd">
+		<Question><TranslatedText>date 2</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="event_2_complete" Name="event_2_complete" DataType="text" Length="1" redcap:Variable="event_2_complete" redcap:FieldType="select" redcap:SectionHeader="Form Status">
+		<Question><TranslatedText>Complete?</TranslatedText></Question>
+		<CodeListRef CodeListOID="event_2_complete.choices"/>
+	</ItemDef>
+	<ItemDef OID="date_example_3" Name="date_example_3" DataType="date" Length="999" redcap:Variable="date_example_3" redcap:FieldType="text" redcap:TextValidationType="date_ymd">
+		<Question><TranslatedText>date 3</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="event_3_complete" Name="event_3_complete" DataType="text" Length="1" redcap:Variable="event_3_complete" redcap:FieldType="select" redcap:SectionHeader="Form Status">
+		<Question><TranslatedText>Complete?</TranslatedText></Question>
+		<CodeListRef CodeListOID="event_3_complete.choices"/>
+	</ItemDef>
+	<ItemDef OID="date_example_4" Name="date_example_4" DataType="date" Length="999" redcap:Variable="date_example_4" redcap:FieldType="text" redcap:TextValidationType="date_ymd">
+		<Question><TranslatedText>date 4</TranslatedText></Question>
+	</ItemDef>
+	<ItemDef OID="event_4_complete" Name="event_4_complete" DataType="text" Length="1" redcap:Variable="event_4_complete" redcap:FieldType="select" redcap:SectionHeader="Form Status">
+		<Question><TranslatedText>Complete?</TranslatedText></Question>
+		<CodeListRef CodeListOID="event_4_complete.choices"/>
+	</ItemDef>
+	<CodeList OID="event_1_complete.choices" Name="event_1_complete" DataType="text" redcap:Variable="event_1_complete">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>Incomplete</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>Unverified</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="2"><Decode><TranslatedText>Complete</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+	<CodeList OID="event_2_complete.choices" Name="event_2_complete" DataType="text" redcap:Variable="event_2_complete">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>Incomplete</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>Unverified</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="2"><Decode><TranslatedText>Complete</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+	<CodeList OID="event_3_complete.choices" Name="event_3_complete" DataType="text" redcap:Variable="event_3_complete">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>Incomplete</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>Unverified</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="2"><Decode><TranslatedText>Complete</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+	<CodeList OID="event_4_complete.choices" Name="event_4_complete" DataType="text" redcap:Variable="event_4_complete">
+		<CodeListItem CodedValue="0"><Decode><TranslatedText>Incomplete</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="1"><Decode><TranslatedText>Unverified</TranslatedText></Decode></CodeListItem>
+		<CodeListItem CodedValue="2"><Decode><TranslatedText>Complete</TranslatedText></Decode></CodeListItem>
+	</CodeList>
+</MetaDataVersion>
+</Study>
+</ODM>
